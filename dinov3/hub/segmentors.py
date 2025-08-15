@@ -5,6 +5,7 @@
 
 import os
 from enum import Enum
+from typing import List, Union, Optional
 
 import torch
 from dinov3.eval.segmentation.models import build_segmentation_decoder
@@ -26,8 +27,8 @@ def _make_dinov3_m2f_segmentor(
     *,
     backbone_name: str = "dinov3_vit7b16",
     pretrained: bool = True,
-    segmentor_weights: SegmentorWeights | str = SegmentorWeights.ADE20K,
-    backbone_weights: BackboneWeights | str = BackboneWeights.LVD1689M,
+    segmentor_weights: Union[SegmentorWeights, str] = SegmentorWeights.ADE20K,
+    backbone_weights: Union[BackboneWeights, str] = BackboneWeights.LVD1689M,
     check_hash: bool = False,
     autocast_dtype: torch.dtype = torch.bfloat16,
     **kwargs,
@@ -67,8 +68,8 @@ def _make_dinov3_m2f_segmentor(
 def dinov3_vit7b16_ms(
     *,
     pretrained: bool = True,
-    weights: SegmentorWeights | str = SegmentorWeights.ADE20K,
-    backbone_weights: BackboneWeights | str = BackboneWeights.LVD1689M,
+    weights: Union[SegmentorWeights, str] = SegmentorWeights.ADE20K,
+    backbone_weights: Union[BackboneWeights, str] = BackboneWeights.LVD1689M,
     check_hash: bool = False,
     autocast_dtype: torch.dtype = torch.bfloat16,
     **kwargs,

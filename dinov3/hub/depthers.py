@@ -4,7 +4,7 @@
 # the terms of the DINOv3 License Agreement.
 
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import torch
 from dinov3.eval.dense.depth.models import build_depther
@@ -67,8 +67,8 @@ def _make_dinov3_dpt_depther(
     *,
     backbone_name: str = "dinov3_vit7b16",
     pretrained: bool = True,
-    depther_weights: DepthWeights | str = DepthWeights.SYNTHMIX,
-    backbone_weights: BackboneWeights | str = BackboneWeights.LVD1689M,
+    depther_weights: Union[DepthWeights, str] = DepthWeights.SYNTHMIX,
+    backbone_weights: Union[BackboneWeights, str] = BackboneWeights.LVD1689M,
     depth_range: Optional[Tuple[float, float]] = None,
     check_hash: bool = False,
     backbone_dtype: torch.dtype = torch.float32,
@@ -117,8 +117,8 @@ def _make_dinov3_dpt_depther(
 def dinov3_vit7b16_dd(
     *,
     pretrained: bool = True,
-    weights: DepthWeights | str = DepthWeights.SYNTHMIX,
-    backbone_weights: BackboneWeights | str = BackboneWeights.LVD1689M,
+    weights: Union[DepthWeights, str] = DepthWeights.SYNTHMIX,
+    backbone_weights: Union[BackboneWeights, str] = BackboneWeights.LVD1689M,
     check_hash: bool = False,
     backbone_dtype: torch.dtype = torch.float32,
     **kwargs,

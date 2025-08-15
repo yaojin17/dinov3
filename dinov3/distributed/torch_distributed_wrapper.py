@@ -10,7 +10,7 @@ import socket
 import subprocess
 from datetime import timedelta
 from enum import Enum
-from typing import List, Sequence
+from typing import List, Sequence, Union
 
 import torch
 import torch.distributed as dist
@@ -229,7 +229,7 @@ def enable_distributed(
     overwrite: bool = False,
     nccl_async_error_handling: bool = False,
     restrict_print_to_main_process: bool = True,
-    timeout: timedelta | None = None,
+    timeout: Union[timedelta, None] = None,
 ):
     """Enable distributed mode.
 

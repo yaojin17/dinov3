@@ -5,7 +5,7 @@
 
 import torch
 from dinov3.eval.dense.depth.utils import cast_to
-
+from typing import List, Union
 from .dpt_head import DPTHead
 from .encoder import BackboneLayersSet, DinoVisionTransformerWrapper, PatchSizeAdaptationStrategy
 
@@ -81,7 +81,7 @@ class FeaturesToDepth(torch.nn.Module):
 
 
 def make_head(
-    embed_dims: int | list[int],
+    embed_dims: Union[int, List[int]],
     n_output_channels: int,
     use_batchnorm: bool = False,
     use_cls_token: bool = False,
@@ -133,7 +133,7 @@ class EncoderDecoder(torch.nn.Module):
 
 def build_depther(
     backbone: torch.nn.Module,
-    backbone_out_layers: list[int] | BackboneLayersSet,
+    backbone_out_layers: Union[List[int], BackboneLayersSet],
     n_output_channels: int,
     use_backbone_norm: bool = False,
     use_batchnorm: bool = False,

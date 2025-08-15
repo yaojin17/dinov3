@@ -60,12 +60,12 @@ class DinoVisionTransformer(nn.Module):
         patch_size: int = 16,
         in_chans: int = 3,
         pos_embed_rope_base: float = 100.0,
-        pos_embed_rope_min_period: float | None = None,
-        pos_embed_rope_max_period: float | None = None,
+        pos_embed_rope_min_period: Union[float, None] = None,
+        pos_embed_rope_max_period: Union[float, None] = None,
         pos_embed_rope_normalize_coords: Literal["min", "max", "separate"] = "separate",
-        pos_embed_rope_shift_coords: float | None = None,
-        pos_embed_rope_jitter_coords: float | None = None,
-        pos_embed_rope_rescale_coords: float | None = None,
+        pos_embed_rope_shift_coords: Union[float, None] = None,
+        pos_embed_rope_jitter_coords: Union[float, None] = None,
+        pos_embed_rope_rescale_coords: Union[float, None] = None,
         pos_embed_rope_dtype: str = "bf16",
         embed_dim: int = 768,
         depth: int = 12,
@@ -73,7 +73,7 @@ class DinoVisionTransformer(nn.Module):
         ffn_ratio: float = 4.0,
         qkv_bias: bool = True,
         drop_path_rate: float = 0.0,
-        layerscale_init: float | None = None,
+        layerscale_init: Union[float, None] = None,
         norm_layer: str = "layernorm",
         ffn_layer: str = "mlp",
         ffn_bias: bool = True,
@@ -82,7 +82,7 @@ class DinoVisionTransformer(nn.Module):
         mask_k_bias: bool = False,
         untie_cls_and_patch_norms: bool = False,
         untie_global_and_local_cls_norm: bool = False,
-        device: Any | None = None,
+        device: Union[Any, None] = None,
         **ignored_kwargs,
     ):
         super().__init__()
@@ -183,7 +183,7 @@ class DinoVisionTransformer(nn.Module):
         nn.init.zeros_(self.mask_token)
         named_apply(init_weights_vit, self)
 
-    def prepare_tokens_with_masks(self, x: Tensor, masks=None) -> Tuple[Tensor, Tuple[int]]:
+    def prepare_tokens_with_masks(self, x: Tensor, masks=None) -> Tuple[Tensor, Tuple[int, int]]:
         x = self.patch_embed(x)
         B, H, W, _ = x.shape
         x = x.flatten(1, 2)
@@ -256,13 +256,13 @@ class DinoVisionTransformer(nn.Module):
             )
         return output
 
-    def forward_features(self, x: Tensor | List[Tensor], masks: Optional[Tensor] = None) -> List[Dict[str, Tensor]]:
+    def forward_features(self, x: Union[Tensor, List[Tensor]], masks: Optional[Tensor] = None) -> List[Dict[str, Tensor]]:
         if isinstance(x, torch.Tensor):
             return self.forward_features_list([x], [masks])[0]
         else:
             return self.forward_features_list(x, masks)
 
-    def _get_intermediate_layers_not_chunked(self, x: Tensor, n: int = 1) -> List[Tensor]:
+    def _get_intermediate_layers_not_chunked(self, x: Tensor, n: Union[int, List[int]] = 1) -> List[Tensor]:
         x, (H, W) = self.prepare_tokens_with_masks(x)
         # If n is an int, take the n last blocks. If it's a list, take them
         output, total_block_len = [], len(self.blocks)
@@ -287,7 +287,7 @@ class DinoVisionTransformer(nn.Module):
         return_class_token: bool = False,
         return_extra_tokens: bool = False,
         norm: bool = True,
-    ) -> Tuple[Union[torch.Tensor, Tuple[torch.Tensor, ...]]]:
+    ) -> Union[torch.Tensor, Tuple[torch.Tensor, ...]]:
         outputs = self._get_intermediate_layers_not_chunked(x, n)
         if norm:
             outputs_normed = []
@@ -317,7 +317,7 @@ class DinoVisionTransformer(nn.Module):
         elif return_class_token and return_extra_tokens:
             return tuple(zip(outputs, class_tokens, extra_tokens))
 
-    def forward(self, *args, is_training: bool = False, **kwargs) -> List[Dict[str, Tensor]] | Tensor:
+    def forward(self, *args, is_training: bool = False, **kwargs) -> Union[List[Dict[str, Tensor]], Tensor]:
         ret = self.forward_features(*args, **kwargs)
         if is_training:
             return ret
